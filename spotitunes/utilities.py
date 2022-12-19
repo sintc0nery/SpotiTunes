@@ -8,6 +8,7 @@ import os
 import calendar
 import datetime
 import subprocess
+from PyInquirer import prompt
 
 
 itunes = win32com.client.Dispatch("iTunes.Application")
@@ -62,6 +63,7 @@ def getSongsPl_SP(pl_name=None):
         almost_clean_artist = u.unidecode(item['track']['artists'][0]['name'].lower())
         clean_artist = almost_clean_artist.replace("(","").replace(")","").replace("[","").replace("]","")
         clean_artist = clean_artist.split(" & ")[0]
+        clean_artist = clean_artist.split(" x ")[0]
         spotiSongs.append([clean_name,clean_artist,item['track']['external_urls']['spotify']])
     
     return spotiSongs
@@ -106,8 +108,12 @@ def getSongsPl_iT(pl_name):
     for song in pl:
         almost_clean_name = u.unidecode(song.name.lower())
         clean_name = almost_clean_name.replace("(","").replace(")","").replace("[","").replace("]","").replace(" x "," ")
-        almost_clean_artist = u.unidecode(song.artist.lower())
-        clean_artist = almost_clean_artist.replace("(","").replace(")","").replace("[","").replace("]","").replace(" x "," ")
+
+        clean_artist = 'None'
+        if song.artist is not None:
+            almost_clean_artist = u.unidecode(song.artist.lower())
+            clean_artist = almost_clean_artist.replace("(","").replace(")","").replace("[","").replace("]","").replace(" x "," ")
+
         itunSongs.append([clean_name, clean_artist])
 
     return itunSongs
@@ -135,7 +141,32 @@ def addSongPl_iT(pl_name,songs_path):
     playlist.AddFile(songs_path)
 
 def downloadAddSongs(pl_name,songsToDownload):
-    #TODO Error Handling
+    #TODO list of songs to select
+    choices = []
+    choices.append({'name': 'Download all songs', 'checked': True})
+    for song in songsToDownload:
+        choices.append({'name': song[0], 'checked': False})
+    questions = [
+        {
+            'type': 'checkbox',
+            'qmark': ' ♪ ',
+            'message': 'Select the songs you want to download',
+            'name': 'songs',
+            'choices': choices,
+            'validate': lambda answer: 'You must choose at least one song.' \
+                if len(answer) == 0 else True
+        }
+    ]
+
+    songsSelected = prompt(questions)
+    if 'Download all songs' not in songsSelected['songs']:
+        toRemove = []
+        for i,song in enumerate(songsToDownload):
+            if songsToDownload[i][0] not in songsSelected['songs']:
+                toRemove.append(songsToDownload[i])
+        for s in toRemove:
+            songsToDownload.remove(s)
+
     date = datetime.datetime.utcnow()
     timestamp = str(calendar.timegm(date.utctimetuple()))
     path = "./deemix-"+pl_name+"-"+timestamp+"/"
@@ -148,10 +179,18 @@ def downloadAddSongs(pl_name,songsToDownload):
     for song in songsToDownload: urls.append(song[2])
     proc_deemix = subprocess.Popen(urls)
     print('[INFO] Downloading songs...')
-    proc_deemix.wait()
-    print("[INFO] Songs downloaded successfully!")
+    try:
+        proc_deemix.wait()
+    except Exception as e:
+        print("[ERROR] Some songs could not be downloaded")
+    else:
+        print("[INFO] Songs downloaded successfully!")
     print("[INFO] Adding it to "+pl_name+"...")
     files = os.listdir(path)
     ext_path = os.path.abspath(path)
-    for file in files: addSongPl_iT(pl_name,ext_path+"\\"+file)
-    print("[SUCESS] All your songs were downloaded and added to your playlist.")
+    try:
+        for file in files: addSongPl_iT(pl_name,ext_path+"\\"+file)
+    except Exception as e:
+        print("[ERROR] There was an error adding your songs to iTunes")
+    else:
+        print("[SUCESS] All your songs were downloaded and added to your playlist")

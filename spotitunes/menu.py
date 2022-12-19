@@ -3,8 +3,10 @@ import argparse
 from prettytable import PrettyTable
 from pyfiglet import Figlet
 import os
+from PyInquirer import prompt
 
-##  MAIN PROGRAM
+# MAIN PROGRAM
+
 
 def main():
 
@@ -12,7 +14,7 @@ def main():
     args = parser.parse_args()
 
     if not os.path.exists('.env'):
-        print("[INFO] The credentials file doesn't exists, please, create it.")
+        print("[INFO] The credentials file doesn't exists, please create it.")
         quit()
 
     print("[INFO] Fetching data...")
@@ -30,29 +32,32 @@ def main():
     print("[INFO] iTunes data was fetched succesfully")
 
     if songs_iT is None:
-        create_pl = input("[WARNING] That iTunes playlist doesn't exist, do you want to create it now? (Y/n) ")
-        if create_pl.lower() == 'y' or create_pl == '':
+        answers = prompt(questions('createPl'))
+        if answers['createPl']:
             u.createPl_iT(args.itunes)
         else:
             quit()
 
-    not_in_it,not_in_sp = u.getDiffPls(songs_SP,songs_iT)
+    not_in_it, not_in_sp = u.getDiffPls(songs_SP, songs_iT)
 
     if not not_in_it and not not_in_sp:
         print("[INFO] This playlists have the same content. All is up to date.")
         quit()
 
     print("[INFO] Playlists differences found:")
-    displayTables(not_in_it,not_in_sp)
+    displayTables(not_in_it, not_in_sp)
 
-    dw_songs = input("[?] Do you want to download and add all songs that are in spotify but not in itunes? (Y/n) ")
-    if dw_songs.lower() == 'y' or dw_songs == '':
-            u.downloadAddSongs(args.itunes,not_in_it)
+    menu_sp_it = prompt(questions('menu_sp_it'))
+    if menu_sp_it['menu_sp_it'] == 0:
+        u.downloadAddSongs(args.itunes, not_in_it)
+    elif menu_sp_it['menu_sp_it'] == 1:
+        print('TODO: itunes delete menu')
     else:
         quit()
 
-def displayTables(not_in_it,not_in_sp):
-    len_table = max(len(not_in_it),len(not_in_sp))
+
+def displayTables(not_in_it, not_in_sp):
+    len_table = max(len(not_in_it), len(not_in_sp))
     aux_not_in_it = []
     counter = len_table
     for songNartist in not_in_it:
@@ -73,37 +78,57 @@ def displayTables(not_in_it,not_in_sp):
         aux_not_in_sp.append("---")
         counter -= 1
 
-    columns = ["IN SPOTIFY BUT NOT IN ITUNES","IN ITUNES BUT NOT IN SPOTIFY"]
+    columns = ["IN SPOTIFY BUT NOT IN ITUNES", "IN ITUNES BUT NOT IN SPOTIFY"]
     t = PrettyTable()
-    t.add_column(columns[0],aux_not_in_it)
-    t.add_column(columns[1],aux_not_in_sp)
+    t.add_column(columns[0], aux_not_in_it)
+    t.add_column(columns[1], aux_not_in_sp)
     print(t)
+
 
 def interactiveInitMenu():
     f = Figlet(font='slant')
     print(f.renderText('SpotiTunes'))
     parser = argparse.ArgumentParser(prog='SpotiTunes',
-    usage='%(prog)s [-l] -s <spotify_playlist_name> -i <itunes_playlist_name>',
-    description='Compares your provided Spotify playlist with your locally stored iTunes playlist with the same name and shows the differences.\n You can also add to iTunes the missing songs.')
+                                     usage='%(prog)s [-l] -s <spotify_playlist_name> -i <itunes_playlist_name>',
+                                     description='Compares your provided Spotify playlist with your locally stored iTunes playlist with the same name and shows the differences.\n You can also add to iTunes the missing songs.')
 
-
-    parser.add_argument('-s','--spl',metavar='',type=str,help='Your spotify playlist name')
-    parser.add_argument('-l','--liked',action='store_true', help='Set if you want to compare with your Spotify liked songs')
-    parser.add_argument('-i','--itunes',metavar='', type=str, help='Your iTunes playlist name to compare with')
+    parser.add_argument('-s', '--spl', metavar='', type=str,
+                        help='Your spotify playlist name')
+    parser.add_argument('-l', '--liked', action='store_true',
+                        help='Set if you want to compare with your Spotify liked songs')
+    parser.add_argument('-i', '--itunes', metavar='', type=str,
+                        help='Your iTunes playlist name to compare with')
 
     args = parser.parse_args()
 
     if(args.spl is None and args.liked is False):
-        parser.error("one of the arguments -s/--spl and -l/--liked is required")
+        parser.error(
+            "one of the arguments -s/--spl and -l/--liked is required")
 
     if(args.itunes is None):
         parser.error("the argument -i/--itunes is required")
     return parser
-   
+
+def questions(type):
+    if type == 'createPl':
+        return [
+            {
+                'type': 'confirm',
+                'message': "That iTunes playlist doesn't exist, do you want to create it now?",
+                'name': 'createPl',
+                'default': True,
+            }
+        ]
+    if type == 'menu_sp_it':
+        return [
+            {
+                'type': 'list',
+                'message': "What do you want to do now?",
+                'name': 'menu_sp_it',
+                'choices': ['Download and add songs from spotify to iTunes', 'Remove songs from iTunes', 'Quit'],
+                'filter': lambda var: ['Download and add songs from spotify to iTunes', 'Remove songs from iTunes', 'Quit'].index(var)
+            }
+        ]
+
 if __name__ == '__main__':
     main()
-
-
-
-
-
