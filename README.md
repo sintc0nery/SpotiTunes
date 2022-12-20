@@ -1,31 +1,30 @@
 # SpotiTunes
-SpotiTunes is a productivity improvement oriented software for DJ's or music passionate.
-Its objective is to compare your desired playlists, in your Spotify account and in your iTunes local Library on your PC.
+SpotiTunes is a productivity-focused software for DJs or music enthusiasts. Its goal is to compare your desired playlists on your Spotify account and on your iTunes local library on your PC.
 ## Installation
-Before the installation, you need to create a Spotify Application in order for you to get the API credentials for querying your Spotify account data, you can do it in the [Spotify developers website](https://developer.spotify.com/dashboard/).
+Before installing, you need to create a Spotify application in order to get the API credentials for querying your Spotify account data. You can do this on the [Spotify developers website](https://developer.spotify.com/dashboard/).
 
-Once you cloned the repository, build and install the package in the repository folder with:
+Once you have cloned the repository, build and install the package in the repository folder with:
 ```
 python setup.py install
 ```
-Done this, create a .env file in the spotitunes package folder and write inside it your Spotify API credentials in this format:
+After doing this, create a .env file in the spotitunes package folder and add your Spotify API credentials in the following format:
 > CLIENT_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' <br>
 > CLIENT_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx' <br>
 > SPOTIFY_USER_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx' <br>
 
-Then, write the following scope: <br>
+Then, add the following scope: <br>
 
 > SCOPE = 'user-library-read user-follow-read playlist-read-private' <br>
 
-And the last, your iTunes library xml path, for example: <br>
+Lastly, add the path to your iTunes library xml file, for example:  <br>
 
 > DIR_ITUNES = 'C:/Users/JohnDoe/Music/iTunes/iTunes Music Library.xml' <br>
 
-You also need to set up the deemix spotify plugin, you can do it by going to the installation directory, by default:
+You also need to set up the deemix Spotify plugin. You can do this by going to the installation directory, which is by default:
 
 > C:/Users/\<username\>/AppData/Roaming/deemix/spotify/config.json
 
-And write inside this file your Spotify API credentials in json format:
+Then, add your Spotify API credentials in JSON format to this file:
 
 ```
 {
@@ -34,12 +33,12 @@ And write inside this file your Spotify API credentials in json format:
   "fallbackSearch": true
 }
 ```
-Save it, and the installation of SpotiTunes will be ready.
-Take a look at the Appendages section for extra information.
+Save the file, and the installation of SpotiTunes will be complete.
+Refer to the Appendices section for additional information.
 
 ## Usage
 
-If everything goes right, you will see the following help section:
+If everything is set up correctly, you will see the following help section:
 
 ```
 >>> SpotiTunes -h ~$
@@ -55,7 +54,8 @@ options:
   -i , --itunes   Your iTunes playlist name to compare with
 ```
 
-Long story short, if you have a Spotify playlist named 'EDM' and an iTunes playlist named 'EDM' too, you can compare their content by:
+In short, if you have a Spotify playlist named 'EDM' and an iTunes playlist named 'EDM' as well, you can compare their contents by:
+
 ```
 >>> SpotiTunes -s 'EDM' -i 'EDM' ~$
 ```
@@ -74,25 +74,25 @@ SpotiTunes will fetch and compare all songs and show you a table like the follow
 +--------------------------------------------------+----------------------------------------------------------------------+
 [?] Do you want to download and add all songs that are in spotify but not in itunes? (Y/n)
 ```
-If you correctly set up the deemix plugin and you chose Yes in the previous question, deemix will download the Spotify songs and SpotiTunes will add it to the iTunes library playlist.
+If you correctly set up the Deemix plugin and you chose Yes in the previous question, Deemix will download the Spotify songs and SpotiTunes will add it to the iTunes library playlist.
 
 # TODO list
 
-- [ ] Improve the data collection with threading.
-- [ ] Check existing songs in itunes library and don't download them
-- [ ] Improve the CLI with PyInquirer.
-  - [ ] Let songs selection for downloading just the ones which you want.
-  - [ ] Enable the deleting of songs the user wants to remove from iTunes/Spotify.
+- [ ] Improve data collection with threading.
+- [ ] Check existing songs in the iTunes library and don't download them.
+- [x] Improve the CLI with PyInquirer.
+  - [x] Allow song selection for downloading only the ones that you want.
+  - [ ] Enable the deletion of songs that the user wants to remove from iTunes/Spotify.
 - [ ] Create a GUI.
 
 # Appendages
 
 ## OAuth2 Spotipy Process
 
-The first time you use SpotiTunes, the spotipy python library needs to do the OAuth2 process.
-- For doing this you need to set a redirection website in your [Spotify Developers Portal Dashboard](https://developer.spotify.com/dashboard/).
-Go to applications and select the application which you are using the credentials, click on "edit settings" and write the website you want to be redirected to in "Redirect URIs" (It can be whatever you want, for example: www.github.com) and click on Save before closing it.
-- Done this if you run SpotiTunes with correct parameters, the website that you set in your dashboard will be opened, then, copy the URL with the query string and put it on the CLI of SpotiTunes.
+The first time you use SpotiTunes, the Spotipy Python library needs to perform the OAuth2 process.
+- To do this, you need to set a redirect website in your [Spotify Developers Portal Dashboard](https://developer.spotify.com/dashboard/).
+Go to Applications and select the application that you are using the credentials for, click "Edit settings" and enter the website you want to be redirected to in "Redirect URIs" (It can be whatever you want, for example: www.github.com) Click Save before closing it.
+- Once you have done this, if you run SpotiTunes with the correct parameters, the website that you set in your dashboard will be opened. Then, copy the URL with the query string and enter it on the SpotiTunes CLI.
 ```
    _____             __  _ ______
   / ___/____  ____  / /_(_)_  __/_  ______  ___  _____
@@ -104,9 +104,9 @@ Go to applications and select the application which you are using the credential
 [INFO] Fetching data...
 Enter the URL you were redirected to: 
 ```
-- Now, your PC will be correctly authenticated for querying Spotify data correctly.
+- Now, your environment will be correctly authenticated for querying Spotify data.
 
 ## Deemix ARL
 
-The first time you use SpotiTunes, if you want to download songs deemix will ask you for the ARL cookie of your Deezer Account.
-You just need to copy it on the SpotiTunes CLI when you were asked.
+The first time you use SpotiTunes, if you want to download songs Deemix will ask you for the ARL cookie of your Deezer account.
+You just need to copy it on the SpotiTunes CLI when prompted.

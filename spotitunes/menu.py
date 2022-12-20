@@ -23,7 +23,7 @@ def main():
     else:
         songs_SP = u.getSongsPl_SP(args.spl)
         if songs_SP is None:
-            parser.error("That spotify playlist doesn't exist")
+            parser.error("[ERROR] That spotify playlist doesn't exist")
 
     print("[INFO] Spotify data was fetched succesfully")
 
@@ -40,20 +40,36 @@ def main():
 
     not_in_it, not_in_sp = u.getDiffPls(songs_SP, songs_iT)
 
-    if not not_in_it and not not_in_sp:
-        print("[INFO] This playlists have the same content. All is up to date.")
-        quit()
+    while True:
+        
+        if not not_in_it and not not_in_sp:
+            print("[INFO] This playlists have the same content. All is up to date.")
+            quit()
 
-    print("[INFO] Playlists differences found:")
-    displayTables(not_in_it, not_in_sp)
+        print("[INFO] Playlists differences found:")
+        displayTables(not_in_it, not_in_sp)
 
-    menu_sp_it = prompt(questions('menu_sp_it'))
-    if menu_sp_it['menu_sp_it'] == 0:
-        u.downloadAddSongs(args.itunes, not_in_it)
-    elif menu_sp_it['menu_sp_it'] == 1:
-        print('TODO: itunes delete menu')
-    else:
-        quit()
+        menu_sp_it = prompt(questions('menu_sp_it'))
+        if menu_sp_it['menu_sp_it'] == 0:
+            if len(not_in_it) != 0:
+                u.downloadAddSongs(args.itunes, not_in_it)
+            else:
+                print("[ERROR] There are no Spotify songs that don't exist on iTunes")
+        elif menu_sp_it['menu_sp_it'] == 1:
+            print('TODO: itunes delete menu')
+        else:
+            quit()
+
+        print("[INFO] Checking the updated data...")
+        
+        #AGAIN
+        if(args.liked):
+            songs_SP = u.getSongsPl_SP()
+        else:
+            songs_SP = u.getSongsPl_SP(args.spl)
+        not_in_it, not_in_sp = u.getDiffPls(songs_SP, u.getSongsPl_iT(args.itunes))
+
+    
 
 
 def displayTables(not_in_it, not_in_sp):
