@@ -65,16 +65,22 @@ SpotiTunes will fetch and compare all songs and show you a table like the follow
 [INFO] Spotify data was fetched succesfully
 [INFO] iTunes data was fetched succesfully
 [INFO] Playlists differences found:
+
 +--------------------------------------------------+----------------------------------------------------------------------+
 |           IN SPOTIFY BUT NOT IN ITUNES           |                     IN ITUNES BUT NOT IN SPOTIFY                     |
 +--------------------------------------------------+----------------------------------------------------------------------+
-|       love is gone - alrt remix - slander        | love is gone feat. dylan matthew alrt remix - slander, dylan matthew |
+|        papaoutai extended mix - stromae          | love is gone feat. dylan matthew alrt remix - slander, dylan matthew |
 |  give it to me - full vocal mix - matt sassari   |                                 ---                                  |
 | destination calabria - radio edit - alex gaudino |                                 ---                                  |
 +--------------------------------------------------+----------------------------------------------------------------------+
-[?] Do you want to download and add all songs that are in spotify but not in itunes? (Y/n)
+? What do you want to do now?  (Use arrow keys)
+ ❯ Download and add songs from spotify to iTunes
+   Remove songs from iTunes
+   Quit
 ```
-If you correctly set up the Deemix plugin and you chose Yes in the previous question, Deemix will download the Spotify songs and SpotiTunes will add it to the iTunes library playlist.
+<del>If you correctly set up the Deemix plugin and you chose Yes in the previous question, Deemix will download the Spotify songs and SpotiTunes will add it to the iTunes library playlist.
+</del>
+<br> TODO explanation of menu
 
 # TODO list
 
